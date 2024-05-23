@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "streetsidesoftware.code-spell-checker",
+    "p42ai.refactor",
+    "prisma.prisma"
+  ]
+}
