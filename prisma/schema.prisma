@@ -34,12 +34,25 @@ model Manager {
   Employee Employee[]
   User     User       @relation(fields: [userId], references: [id])
   userId   String     @unique
+  Task     Task[]
 }
 
 model Employee {
   id        String  @id @default(uuid())
   Manager   Manager @relation(fields: [managerId], references: [id])
   managerId String
-  User      User?   @relation(fields: [userId], references: [id])
-  userId    String? @unique
+  User      User    @relation(fields: [userId], references: [id])
+  userId    String  @unique
+  Task      Task[]
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  result      String?
+  Manager     Manager  @relation(fields: [managerId], references: [id])
+  managerId   String
+  Employee    Employee @relation(fields: [employeeId], references: [id])
+  employeeId  String
 }

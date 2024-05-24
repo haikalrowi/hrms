@@ -25,8 +25,18 @@ async function main() {
       Employee: { create: { Manager: { connect: { id: alice.Manager?.id } } } },
     },
   });
+  const chris = await prisma.user.upsert({
+    where: { email: "chris@prisma.io" },
+    update: {},
+    create: {
+      email: "chris@prisma.io",
+      name: "Chris",
+      Password: { create: { password: "password" } },
+      Employee: { create: { Manager: { connect: { id: alice.Manager?.id } } } },
+    },
+  });
 
-  console.log({ alice, bob });
+  console.log({ alice, bob, chris });
 }
 
 main()
