@@ -30,20 +30,22 @@ model Password {
 }
 
 model Manager {
-  id       String     @id @default(uuid())
-  Employee Employee[]
-  User     User       @relation(fields: [userId], references: [id])
-  userId   String     @unique
-  Task     Task[]
+  id         String       @id @default(uuid())
+  Employee   Employee[]
+  User       User         @relation(fields: [userId], references: [id])
+  userId     String       @unique
+  Task       Task[]
+  Attendance Attendance[]
 }
 
 model Employee {
-  id        String  @id @default(uuid())
-  Manager   Manager @relation(fields: [managerId], references: [id])
-  managerId String
-  User      User    @relation(fields: [userId], references: [id])
-  userId    String  @unique
-  Task      Task[]
+  id         String       @id @default(uuid())
+  Manager    Manager      @relation(fields: [managerId], references: [id])
+  managerId  String
+  User       User         @relation(fields: [userId], references: [id])
+  userId     String       @unique
+  Task       Task[]
+  Attendance Attendance[]
 }
 
 model Task {
@@ -55,4 +57,16 @@ model Task {
   managerId   String
   Employee    Employee @relation(fields: [employeeId], references: [id])
   employeeId  String
+}
+
+model Attendance {
+  id           String    @id @default(uuid())
+  checkInDate  DateTime
+  checkOutDate DateTime
+  checkInAt    DateTime?
+  checkOutAt   DateTime?
+  Manager      Manager   @relation(fields: [managerId], references: [id])
+  managerId    String
+  Employee     Employee  @relation(fields: [employeeId], references: [id])
+  employeeId   String
 }
