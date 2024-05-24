@@ -65,22 +65,26 @@ export async function managerCreateTask(formData: FormData) {
     where: { email: formData.get("email") as string },
     select: { Employee: {} },
   });
-  await prisma.task.create({
-    data: {
-      title: formData.get("title") as string,
-      description: formData.get("description") as string,
-      Manager: { connect: { id: currentContext.user.Manager?.id } },
-      Employee: { connect: { id: employee.Employee?.id } },
-    },
-  });
-  revalidatePath("/");
+  if (currentContext.isManager) {
+    await prisma.task.create({
+      data: {
+        title: formData.get("title") as string,
+        description: formData.get("description") as string,
+        Manager: { connect: { id: currentContext.user.Manager?.id } },
+        Employee: { connect: { id: employee.Employee?.id } },
+      },
+    });
+    revalidatePath("/");
+  }
 }
 
 export async function employeeUpdateTaskResult(id: string, result: string) {
   const currentContext = await userContext();
-  await prisma.task.update({
-    where: { id, Employee: { id: currentContext.user.Employee?.id } },
-    data: { result },
-  });
-  revalidatePath("/");
+  if (currentContext.isEmployee) {
+    await prisma.task.update({
+      where: { id, Employee: { id: currentContext.user.Employee?.id } },
+      data: { result },
+    });
+    revalidatePath("/");
+  }
 }
