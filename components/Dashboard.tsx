@@ -4,37 +4,26 @@ import { UserContext, UserContextType } from "@/context/Dashboard";
 import { userLogout } from "@/lib/action";
 import { Box, Button, Flex, Separator, Text } from "@radix-ui/themes";
 import { useState } from "react";
+import { EmployeeAttendance } from "./Employee/Attendance";
+import { EmployeeMain } from "./Employee/Main";
 import { EmployeeTask } from "./Employee/Task";
+import { ManagerAttendance } from "./Manager/Attendance";
 import { ManagerEmployee } from "./Manager/Employee";
 import { ManagerMain } from "./Manager/Main";
 import { ManagerTask } from "./Manager/Task";
-import { EmployeeMain } from "./Employee/Main";
 
 export function Dashboard(props: UserContextType) {
   const pages =
     (props.isManager && [
-      {
-        title: "Main",
-        content: <ManagerMain />,
-      },
-      {
-        title: "Task",
-        content: <ManagerTask />,
-      },
-      {
-        title: "Employee",
-        content: <ManagerEmployee />,
-      },
+      { title: "Main", content: <ManagerMain /> },
+      { title: "Task", content: <ManagerTask /> },
+      { title: "Attendance", content: <ManagerAttendance /> },
+      { title: "Employee", content: <ManagerEmployee /> },
     ]) ||
     (props.isEmployee && [
-      {
-        title: "Main",
-        content: <EmployeeMain />,
-      },
-      {
-        title: "Task",
-        content: <EmployeeTask />,
-      },
+      { title: "Main", content: <EmployeeMain /> },
+      { title: "Task", content: <EmployeeTask /> },
+      { title: "Attendance", content: <EmployeeAttendance /> },
     ]) ||
     [];
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
@@ -52,8 +41,8 @@ export function Dashboard(props: UserContextType) {
             };
             return (
               <Button
-                size={"3"}
                 key={index}
+                size={"3"}
                 variant="ghost"
                 onClick={changePage}
                 style={{
