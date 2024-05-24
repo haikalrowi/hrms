@@ -2,6 +2,7 @@
 
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const bcrypt = require("bcryptjs");
 
 async function main() {
   const alice = await prisma.user.upsert({
@@ -10,7 +11,7 @@ async function main() {
     create: {
       email: "alice@prisma.io",
       name: "Alice",
-      Password: { create: { password: "password" } },
+      Password: { create: { password: bcrypt.hashSync("password") } },
       Manager: { create: {} },
     },
     include: { Manager: {} },
@@ -21,7 +22,7 @@ async function main() {
     create: {
       email: "bob@prisma.io",
       name: "Bob",
-      Password: { create: { password: "password" } },
+      Password: { create: { password: bcrypt.hashSync("password") } },
       Employee: { create: { Manager: { connect: { id: alice.Manager?.id } } } },
     },
   });
@@ -31,7 +32,7 @@ async function main() {
     create: {
       email: "chris@prisma.io",
       name: "Chris",
-      Password: { create: { password: "password" } },
+      Password: { create: { password: bcrypt.hashSync("password") } },
       Employee: { create: { Manager: { connect: { id: alice.Manager?.id } } } },
     },
   });
