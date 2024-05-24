@@ -6,8 +6,8 @@ import { cookies } from "next/headers";
 export default async function Home() {
   const userId = cookies().get("userLogin")?.value;
   if (userId) {
-    const currentUserContext = await userContext(userId);
-    return <Dashboard {...currentUserContext} />;
+    const currentContext = await userContext(userId);
+    return <Dashboard {...currentContext} />;
   }
   return <Login />;
 }
