@@ -1,5 +1,4 @@
-import "@/public/modern-normalize.min.css";
-import { Theme } from "@radix-ui/themes";
+import { Reset, Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -17,10 +16,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Theme appearance="dark">{children}</Theme>
-      </body>
-    </html>
+    <Reset>
+      <html lang="en">
+        <Reset>
+          <body className={inter.className}>
+            <Theme appearance="dark">{children}</Theme>
+          </body>
+        </Reset>
+      </html>
+    </Reset>
   );
 }
