@@ -103,7 +103,9 @@ export function ManagerAttendance() {
                   <Badge>{attendanceStatus.checkInStatus}</Badge>
                 </Table.Cell>
                 <Table.Cell>
-                  <Badge>{attendanceStatus.checkOutStatus}</Badge>
+                  {attendanceStatus.checkOutStatus && (
+                    <Badge>{attendanceStatus.checkOutStatus}</Badge>
+                  )}
                 </Table.Cell>
                 <Table.Cell>
                   <Dialog.Root>
