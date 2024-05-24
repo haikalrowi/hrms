@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { prisma } from "./prisma";
 
@@ -21,8 +22,13 @@ export async function userContext(id: string) {
   const user = await prisma.user.findUniqueOrThrow({
     where: { id },
     include: {
-      Manager: { include: { Employee: {} } },
-      Employee: { include: { Manager: {} } },
+      Manager: {
+        include: {
+          Employee: { include: { User: {} } },
+          Task: { include: { Employee: { include: { User: {} } } } },
+        },
+      },
+      Employee: { include: { Manager: {}, Task: {} } },
     },
   });
   const isManager = !!(
@@ -39,4 +45,36 @@ export async function userContext(id: string) {
   );
 
   return { isManager, isEmployee, user };
+}
+
+export async function userId() {
+  const id = cookies().get("userLogin")?.value;
+  const user = await prisma.user.findUniqueOrThrow({ where: { id } });
+  return user.id;
+}
+
+export async function managerCreateTask(formData: FormData) {
+  const currentContext = await userContext(await userId());
+  const employee = await prisma.user.findUniqueOrThrow({
+    where: { email: formData.get("email") as string },
+    select: { Employee: {} },
+  });
+  await prisma.task.create({
+    data: {
+      title: formData.get("title") as string,
+      description: formData.get("description") as string,
+      Manager: { connect: { id: currentContext.user.Manager?.id } },
+      Employee: { connect: { id: employee.Employee?.id } },
+    },
+  });
+  revalidatePath("/");
+}
+
+export async function employeeUpdateTaskResult(id: string, result: string) {
+  const currentContext = await userContext(await userId());
+  await prisma.task.update({
+    where: { id, Employee: { id: currentContext.user.Employee?.id } },
+    data: { result },
+  });
+  revalidatePath("/");
 }
