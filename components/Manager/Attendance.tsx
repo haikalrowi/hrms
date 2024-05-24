@@ -4,6 +4,7 @@ import {
   Badge,
   Button,
   Container,
+  DataList,
   Dialog,
   Flex,
   Select,
@@ -72,6 +73,7 @@ function Create() {
 
 export function ManagerAttendance() {
   const userContext = useContext(UserContext);
+  const today = new Date();
 
   return (
     <Container>
@@ -95,28 +97,71 @@ export function ManagerAttendance() {
               </Table.Cell>
               <Table.Cell>
                 {attendance.checkInAt ? (
-                  attendance.checkInAt <= attendance.checkInDate ? (
+                  attendance.checkInAt <= attendance.checkInDate && (
                     <Badge>On time</Badge>
-                  ) : (
-                    <Badge>Late</Badge>
                   )
-                ) : (
+                ) : today <= attendance.checkInDate ? (
                   <Badge>No status</Badge>
+                ) : (
+                  <Badge>Late</Badge>
                 )}
               </Table.Cell>
               <Table.Cell>
                 {attendance.checkOutAt ? (
-                  attendance.checkOutAt >= attendance.checkOutDate ? (
+                  attendance.checkOutAt >= attendance.checkOutDate && (
                     <Badge>On time</Badge>
-                  ) : (
-                    <Badge>Early</Badge>
                   )
                 ) : (
                   <Badge>No status</Badge>
                 )}
               </Table.Cell>
               <Table.Cell>
-                <Button variant="ghost">Detail</Button>
+                <Dialog.Root>
+                  <Dialog.Trigger>
+                    <Button variant="ghost">Detail</Button>
+                  </Dialog.Trigger>
+                  <Dialog.Content>
+                    <Dialog.Title>
+                      {attendance.Employee.User.name}
+                      <Text as="span"> - </Text>
+                      {attendance.Employee.User.email}
+                    </Dialog.Title>
+                    <DataList.Root>
+                      <DataList.Item align={"center"}>
+                        <DataList.Label minWidth={"88px"}>
+                          Check in date
+                        </DataList.Label>
+                        <DataList.Value>
+                          {attendance.checkInDate.toLocaleString()}
+                        </DataList.Value>
+                      </DataList.Item>
+                      <DataList.Item>
+                        <DataList.Label minWidth={"88px"}>
+                          Check out date
+                        </DataList.Label>
+                        <DataList.Value>
+                          {attendance.checkOutDate.toLocaleString()}
+                        </DataList.Value>
+                      </DataList.Item>
+                      <DataList.Item>
+                        <DataList.Label minWidth={"88px"}>
+                          Check in at
+                        </DataList.Label>
+                        <DataList.Value>
+                          {attendance.checkInAt?.toLocaleString()}
+                        </DataList.Value>
+                      </DataList.Item>
+                      <DataList.Item>
+                        <DataList.Label minWidth={"88px"}>
+                          Check out at
+                        </DataList.Label>
+                        <DataList.Value>
+                          {attendance.checkOutAt?.toLocaleString()}
+                        </DataList.Value>
+                      </DataList.Item>
+                    </DataList.Root>
+                  </Dialog.Content>
+                </Dialog.Root>
               </Table.Cell>
             </Table.Row>
           ))}
