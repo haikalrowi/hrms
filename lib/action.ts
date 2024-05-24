@@ -3,7 +3,7 @@
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { sign, verify } from "./jwt";
 import { prisma } from "./prisma";
 
@@ -20,8 +20,8 @@ export async function userLogin(formData: FormData) {
   );
   if (isEqual) {
     cookies().set("userLogin", await sign({ id: user.id }));
-  }
-  redirect("/");
+    redirect("/");
+  } else notFound();
 }
 
 export async function userLogout() {
@@ -38,9 +38,10 @@ export async function userContext() {
         include: {
           Employee: { include: { User: {} } },
           Task: { include: { Employee: { include: { User: {} } } } },
+          Attendance: { include: { Employee: { include: { User: {} } } } },
         },
       },
-      Employee: { include: { Manager: {}, Task: {} } },
+      Employee: { include: { Manager: {}, Task: {}, Attendance: {} } },
     },
   });
   const isManager = !!(
@@ -61,11 +62,11 @@ export async function userContext() {
 
 export async function managerCreateTask(formData: FormData) {
   const currentContext = await userContext();
-  const employee = await prisma.user.findUniqueOrThrow({
-    where: { email: formData.get("email") as string },
-    select: { Employee: {} },
-  });
   if (currentContext.isManager) {
+    const employee = await prisma.user.findUniqueOrThrow({
+      where: { email: formData.get("email") as string },
+      select: { Employee: {} },
+    });
     await prisma.task.create({
       data: {
         title: formData.get("title") as string,
@@ -75,7 +76,30 @@ export async function managerCreateTask(formData: FormData) {
       },
     });
     revalidatePath("/");
-  }
+  } else notFound();
+}
+
+export async function managerCreateAttendance(formData: FormData) {
+  const currentContext = await userContext();
+  if (currentContext.isManager) {
+    const employee = await prisma.user.findUniqueOrThrow({
+      where: { email: formData.get("email") as string },
+      select: { Employee: {} },
+    });
+    const checkIn = new Date(formData.get("check-in") as string);
+    const checkOut = new Date(formData.get("check-out") as string);
+    if (checkIn <= checkOut) {
+      await prisma.attendance.create({
+        data: {
+          checkInDate: checkIn,
+          checkOutDate: checkOut,
+          Manager: { connect: { id: currentContext.user.Manager?.id } },
+          Employee: { connect: { id: employee.Employee?.id } },
+        },
+      });
+      revalidatePath("/");
+    } else notFound();
+  } else notFound();
 }
 
 export async function employeeUpdateTaskResult(id: string, result: string) {
@@ -87,4 +111,21 @@ export async function employeeUpdateTaskResult(id: string, result: string) {
     });
     revalidatePath("/");
   }
+}
+
+export async function employeeUpdateAttendance(
+  id: string,
+  update: "checkInAt" | "checkOutAt",
+) {
+  const currentContext = await userContext();
+  if (currentContext.isEmployee) {
+    await prisma.attendance.update({
+      where: { id },
+      data: {
+        checkInAt: update === "checkInAt" ? new Date() : undefined,
+        checkOutAt: update === "checkOutAt" ? new Date() : undefined,
+      },
+    });
+    revalidatePath("/");
+  } else notFound();
 }
