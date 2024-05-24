@@ -1,5 +1,6 @@
 import { UserContext } from "@/context/Dashboard";
 import { employeeUpdateTaskResult } from "@/lib/action";
+import { getTaskResultStatus } from "@/lib/utils";
 import {
   Badge,
   Button,
@@ -37,15 +38,12 @@ export function EmployeeTask() {
                 formData.get("result") as string,
               );
             };
+            const result = getTaskResultStatus(task);
             return (
               <Table.Row key={task.id}>
                 <Table.Cell>{task.title}</Table.Cell>
                 <Table.Cell>
-                  {task.result ? (
-                    <Badge>Result available</Badge>
-                  ) : (
-                    <Badge>No result</Badge>
-                  )}
+                  <Badge>{result}</Badge>
                 </Table.Cell>
                 <Table.Cell>
                   <Dialog.Root>

@@ -1,5 +1,6 @@
 import { UserContext } from "@/context/Dashboard";
 import { managerCreateAttendance } from "@/lib/action";
+import { getAttendanceStatus, joinString } from "@/lib/utils";
 import {
   Badge,
   Button,
@@ -35,7 +36,7 @@ function Create() {
                       key={employee.User.id}
                       value={employee.User.email}
                     >
-                      {employee.User.name} - ({employee.User.email})
+                      {joinString(employee.User.name, employee.User.email)}
                     </Select.Item>
                   ))}
                 </Select.Content>
@@ -73,7 +74,6 @@ function Create() {
 
 export function ManagerAttendance() {
   const userContext = useContext(UserContext);
-  const today = new Date();
 
   return (
     <Container>
@@ -88,83 +88,74 @@ export function ManagerAttendance() {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {userContext.user?.Manager?.Attendance.map((attendance) => (
-            <Table.Row key={attendance.id}>
-              <Table.Cell>
-                {attendance.Employee.User.name}
-                <Text as="span"> - </Text>
-                {attendance.Employee.User.email}
-              </Table.Cell>
-              <Table.Cell>
-                {attendance.checkInAt ? (
-                  attendance.checkInAt <= attendance.checkInDate && (
-                    <Badge>On time</Badge>
-                  )
-                ) : today <= attendance.checkInDate ? (
-                  <Badge>No status</Badge>
-                ) : (
-                  <Badge>Late</Badge>
-                )}
-              </Table.Cell>
-              <Table.Cell>
-                {attendance.checkOutAt ? (
-                  attendance.checkOutAt >= attendance.checkOutDate && (
-                    <Badge>On time</Badge>
-                  )
-                ) : (
-                  <Badge>No status</Badge>
-                )}
-              </Table.Cell>
-              <Table.Cell>
-                <Dialog.Root>
-                  <Dialog.Trigger>
-                    <Button variant="ghost">Detail</Button>
-                  </Dialog.Trigger>
-                  <Dialog.Content>
-                    <Dialog.Title>
-                      {attendance.Employee.User.name}
-                      <Text as="span"> - </Text>
-                      {attendance.Employee.User.email}
-                    </Dialog.Title>
-                    <DataList.Root>
-                      <DataList.Item align={"center"}>
-                        <DataList.Label minWidth={"88px"}>
-                          Check in date
-                        </DataList.Label>
-                        <DataList.Value>
-                          {attendance.checkInDate.toLocaleString()}
-                        </DataList.Value>
-                      </DataList.Item>
-                      <DataList.Item>
-                        <DataList.Label minWidth={"88px"}>
-                          Check out date
-                        </DataList.Label>
-                        <DataList.Value>
-                          {attendance.checkOutDate.toLocaleString()}
-                        </DataList.Value>
-                      </DataList.Item>
-                      <DataList.Item>
-                        <DataList.Label minWidth={"88px"}>
-                          Check in at
-                        </DataList.Label>
-                        <DataList.Value>
-                          {attendance.checkInAt?.toLocaleString()}
-                        </DataList.Value>
-                      </DataList.Item>
-                      <DataList.Item>
-                        <DataList.Label minWidth={"88px"}>
-                          Check out at
-                        </DataList.Label>
-                        <DataList.Value>
-                          {attendance.checkOutAt?.toLocaleString()}
-                        </DataList.Value>
-                      </DataList.Item>
-                    </DataList.Root>
-                  </Dialog.Content>
-                </Dialog.Root>
-              </Table.Cell>
-            </Table.Row>
-          ))}
+          {userContext.user?.Manager?.Attendance.map((attendance) => {
+            const employee = joinString(
+              attendance.Employee.User.name,
+              attendance.Employee.User.email,
+            );
+            const attendanceStatus = getAttendanceStatus(attendance);
+            return (
+              <Table.Row key={attendance.id}>
+                <Table.Cell>
+                  <Text>{employee}</Text>
+                </Table.Cell>
+                <Table.Cell>
+                  <Badge>{attendanceStatus.checkInStatus}</Badge>
+                </Table.Cell>
+                <Table.Cell>
+                  <Badge>{attendanceStatus.checkOutStatus}</Badge>
+                </Table.Cell>
+                <Table.Cell>
+                  <Dialog.Root>
+                    <Dialog.Trigger>
+                      <Button variant="ghost">Detail</Button>
+                    </Dialog.Trigger>
+                    <Dialog.Content>
+                      <Dialog.Title>
+                        {attendance.Employee.User.name}
+                        <Text as="span"> - </Text>
+                        {attendance.Employee.User.email}
+                      </Dialog.Title>
+                      <DataList.Root>
+                        <DataList.Item align={"center"}>
+                          <DataList.Label minWidth={"88px"}>
+                            Check in date
+                          </DataList.Label>
+                          <DataList.Value>
+                            {attendance.checkInDate.toLocaleString()}
+                          </DataList.Value>
+                        </DataList.Item>
+                        <DataList.Item>
+                          <DataList.Label minWidth={"88px"}>
+                            Check out date
+                          </DataList.Label>
+                          <DataList.Value>
+                            {attendance.checkOutDate.toLocaleString()}
+                          </DataList.Value>
+                        </DataList.Item>
+                        <DataList.Item>
+                          <DataList.Label minWidth={"88px"}>
+                            Check in at
+                          </DataList.Label>
+                          <DataList.Value>
+                            {attendance.checkInAt?.toLocaleString()}
+                          </DataList.Value>
+                        </DataList.Item>
+                        <DataList.Item>
+                          <DataList.Label minWidth={"88px"}>
+                            Check out at
+                          </DataList.Label>
+                          <DataList.Value>
+                            {attendance.checkOutAt?.toLocaleString()}
+                          </DataList.Value>
+                        </DataList.Item>
+                      </DataList.Root>
+                    </Dialog.Content>
+                  </Dialog.Root>
+                </Table.Cell>
+              </Table.Row>
+            );
+          })}
         </Table.Body>
       </Table.Root>
     </Container>

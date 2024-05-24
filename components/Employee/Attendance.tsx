@@ -1,11 +1,11 @@
 import { UserContext } from "@/context/Dashboard";
 import { employeeUpdateAttendance } from "@/lib/action";
+import { getAttendanceStatus } from "@/lib/utils";
 import { Badge, Button, Container, Table } from "@radix-ui/themes";
 import { useContext } from "react";
 
 export function EmployeeAttendance() {
   const userContext = useContext(UserContext);
-  const today = new Date();
 
   return (
     <Container>
@@ -26,37 +26,31 @@ export function EmployeeAttendance() {
             const checkOut = async () => {
               await employeeUpdateAttendance(attendance.id, "checkOutAt");
             };
+            const attendanceStatus = getAttendanceStatus(attendance);
             return (
               <Table.Row key={attendance.id}>
                 <Table.Cell>
                   {attendance.checkInDate.toLocaleString()}
                 </Table.Cell>
                 <Table.Cell>
-                  {attendance.checkOutDate.toLocaleString()}{" "}
+                  {attendance.checkOutDate.toLocaleString()}
                 </Table.Cell>
                 <Table.Cell>
-                  {attendance.checkInAt ? (
-                    attendance.checkInAt <= attendance.checkInDate && (
-                      <Badge>On time</Badge>
-                    )
-                  ) : today <= attendance.checkInDate ? (
-                    <Button variant="ghost" onClick={checkIn}>
-                      Check in
-                    </Button>
+                  {attendanceStatus.checkInStatus === "No status" ? (
+                    <Button onClick={checkIn}>Check in</Button>
                   ) : (
-                    <Badge>Late</Badge>
+                    <Badge>{attendanceStatus.checkInStatus}</Badge>
                   )}
                 </Table.Cell>
                 <Table.Cell>
-                  {attendance.checkOutAt
-                    ? attendance.checkOutAt >= attendance.checkOutDate && (
-                        <Badge>On time</Badge>
-                      )
-                    : today >= attendance.checkOutDate && (
-                        <Button variant="ghost" onClick={checkOut}>
-                          Check out
-                        </Button>
-                      )}
+                  {attendanceStatus.checkOutStatus &&
+                    (attendanceStatus.checkOutStatus === "No status" ? (
+                      <Button variant="ghost" onClick={checkOut}>
+                        Check out
+                      </Button>
+                    ) : (
+                      <Badge>{attendanceStatus.checkOutStatus}</Badge>
+                    ))}
                 </Table.Cell>
               </Table.Row>
             );
