@@ -37,7 +37,9 @@ export function EmployeeAttendance() {
                 </Table.Cell>
                 <Table.Cell>
                   {attendanceStatus.checkInStatus === "No status" ? (
-                    <Button onClick={checkIn}>Check in</Button>
+                    <Button variant="ghost" onClick={checkIn}>
+                      Check in
+                    </Button>
                   ) : (
                     <Badge>{attendanceStatus.checkInStatus}</Badge>
                   )}
