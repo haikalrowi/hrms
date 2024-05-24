@@ -1,24 +1,36 @@
 "use server";
 
+import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { sign, verify } from "./jwt";
 import { prisma } from "./prisma";
 
 export async function userLogin(formData: FormData) {
   const user = await prisma.user.findUniqueOrThrow({
     where: {
       email: formData.get("email") as string,
-      Password: { password: formData.get("password") as string },
     },
+    include: { Password: {} },
   });
-  cookies().set("userLogin", user.id);
+  const isEqual = bcrypt.compareSync(
+    formData.get("password") as string,
+    user.Password?.password!,
+  );
+  if (isEqual) {
+    cookies().set("userLogin", await sign({ id: user.id }));
+  }
+  redirect("/");
 }
 
 export async function userLogout() {
   cookies().delete("userLogin");
 }
 
-export async function userContext(id: string) {
+export async function userContext() {
+  const token = cookies().get("userLogin")?.value;
+  const { id } = await verify(token!);
   const user = await prisma.user.findUniqueOrThrow({
     where: { id },
     include: {
@@ -47,14 +59,8 @@ export async function userContext(id: string) {
   return { isManager, isEmployee, user };
 }
 
-export async function userId() {
-  const id = cookies().get("userLogin")?.value;
-  const user = await prisma.user.findUniqueOrThrow({ where: { id } });
-  return user.id;
-}
-
 export async function managerCreateTask(formData: FormData) {
-  const currentContext = await userContext(await userId());
+  const currentContext = await userContext();
   const employee = await prisma.user.findUniqueOrThrow({
     where: { email: formData.get("email") as string },
     select: { Employee: {} },
@@ -71,7 +77,7 @@ export async function managerCreateTask(formData: FormData) {
 }
 
 export async function employeeUpdateTaskResult(id: string, result: string) {
-  const currentContext = await userContext(await userId());
+  const currentContext = await userContext();
   await prisma.task.update({
     where: { id, Employee: { id: currentContext.user.Employee?.id } },
     data: { result },
