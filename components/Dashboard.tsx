@@ -2,33 +2,38 @@
 
 import { UserContext, UserContextType } from "@/context/Dashboard";
 import { userLogout } from "@/lib/action";
-import { Box, Button, Flex, Text } from "@radix-ui/themes";
+import { Box, Button, Flex, Separator, Text } from "@radix-ui/themes";
 import { useState } from "react";
+import { EmployeeTask } from "./Employee/Task";
+import { ManagerEmployee } from "./Manager/Employee";
+import { ManagerMain } from "./Manager/Main";
+import { ManagerTask } from "./Manager/Task";
+import { EmployeeMain } from "./Employee/Main";
 
 export function Dashboard(props: UserContextType) {
   const pages =
     (props.isManager && [
       {
         title: "Main",
-        content: <div>Manager main</div>,
+        content: <ManagerMain />,
       },
       {
         title: "Task",
-        content: <div>Task</div>,
+        content: <ManagerTask />,
       },
       {
         title: "Employee",
-        content: <div>Employee</div>,
+        content: <ManagerEmployee />,
       },
     ]) ||
     (props.isEmployee && [
       {
         title: "Main",
-        content: <div>Employee main</div>,
+        content: <EmployeeMain />,
       },
       {
         title: "Task",
-        content: <div>Task</div>,
+        content: <EmployeeTask />,
       },
     ]) ||
     [];
@@ -62,7 +67,8 @@ export function Dashboard(props: UserContextType) {
             );
           })}
           <Box flexGrow={"1"} />
-          <Text>{props.user?.email}</Text>
+          <Separator size={"4"} />
+          <Text style={{ color: "var(--gray-11)" }}>{props.user?.email}</Text>
           <Button
             size={"3"}
             variant="ghost"
