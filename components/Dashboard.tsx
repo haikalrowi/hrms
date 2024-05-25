@@ -27,8 +27,11 @@ export function Dashboard(props: UserContextType) {
     ]) ||
     [];
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [pending, setPending] = useState(false);
   const logout = async () => {
+    setPending(true);
     await userLogout();
+    setPending(false);
   };
 
   return (
@@ -64,6 +67,7 @@ export function Dashboard(props: UserContextType) {
             <Button
               size={"3"}
               variant="ghost"
+              loading={pending}
               style={{ justifyContent: "start" }}
               onClick={logout}
             >

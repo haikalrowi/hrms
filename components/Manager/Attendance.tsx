@@ -14,6 +14,7 @@ import {
   TextField,
 } from "@radix-ui/themes";
 import { useContext } from "react";
+import { SubmitButton } from "../ui/submit-button";
 
 function Create() {
   const userContext = useContext(UserContext);
@@ -61,7 +62,7 @@ function Create() {
                   </Button>
                 </Dialog.Close>
                 <Dialog.Close>
-                  <Button type="submit">Create</Button>
+                  <SubmitButton>Create</SubmitButton>
                 </Dialog.Close>
               </Flex>
             </form>

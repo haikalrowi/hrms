@@ -12,6 +12,7 @@ import {
   TextArea,
 } from "@radix-ui/themes";
 import { useContext } from "react";
+import { SubmitButton } from "../ui/submit-button";
 
 export function EmployeeTask() {
   const userContext = useContext(UserContext);
@@ -69,7 +70,7 @@ export function EmployeeTask() {
                               </Button>
                             </Dialog.Close>
                             <Dialog.Close>
-                              <Button type="submit">Update task</Button>
+                              <SubmitButton>Update task</SubmitButton>
                             </Dialog.Close>
                           </Flex>
                         </form>

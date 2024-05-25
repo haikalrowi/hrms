@@ -2,7 +2,7 @@ import { UserContext } from "@/context/Dashboard";
 import { employeeUpdateAttendance } from "@/lib/action";
 import { getAttendanceStatus } from "@/lib/utils";
 import { Badge, Button, Container, Table } from "@radix-ui/themes";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
 export function EmployeeAttendance() {
   const userContext = useContext(UserContext);
@@ -20,11 +20,17 @@ export function EmployeeAttendance() {
         </Table.Header>
         <Table.Body>
           {userContext.user?.Employee?.Attendance.map((attendance) => {
+            const [checkInPending, setCheckInPending] = useState(false);
+            const [checkOutPending, setCheckOutPending] = useState(false);
             const checkIn = async () => {
+              setCheckInPending(true);
               await employeeUpdateAttendance(attendance.id, "checkInAt");
+              setCheckInPending(false);
             };
             const checkOut = async () => {
+              setCheckOutPending(true);
               await employeeUpdateAttendance(attendance.id, "checkOutAt");
+              setCheckOutPending(true);
             };
             const attendanceStatus = getAttendanceStatus(attendance);
             return (
@@ -37,7 +43,11 @@ export function EmployeeAttendance() {
                 </Table.Cell>
                 <Table.Cell>
                   {attendanceStatus.checkInStatus === "No status" ? (
-                    <Button variant="ghost" onClick={checkIn}>
+                    <Button
+                      variant="ghost"
+                      loading={checkInPending}
+                      onClick={checkIn}
+                    >
                       Check in
                     </Button>
                   ) : (
@@ -47,7 +57,11 @@ export function EmployeeAttendance() {
                 <Table.Cell>
                   {attendanceStatus.checkOutStatus &&
                     (attendanceStatus.checkOutStatus === "No status" ? (
-                      <Button variant="ghost" onClick={checkOut}>
+                      <Button
+                        variant="ghost"
+                        loading={checkOutPending}
+                        onClick={checkOut}
+                      >
                         Check out
                       </Button>
                     ) : (

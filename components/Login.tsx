@@ -1,15 +1,8 @@
 "use client";
 
 import { userLogin } from "@/lib/action";
-import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  Container,
-  Flex,
-  TextField,
-} from "@radix-ui/themes";
+import { Avatar, Card, Container, Flex, TextField } from "@radix-ui/themes";
+import { SubmitButton } from "./ui/submit-button";
 
 export function Login() {
   return (
@@ -29,7 +22,7 @@ export function Login() {
           >
             <form action={userLogin}>
               <Flex justify={"center"} mb={"3"}>
-                <Avatar size={"9"} radius="full" fallback />
+                <Avatar size={"9"} radius="full" fallback="A" />
               </Flex>
               <TextField.Root type="email" placeholder="Email" name="email" />
               <TextField.Root
@@ -38,7 +31,7 @@ export function Login() {
                 name="password"
               />
               <Flex direction={"column"} mt={"2"}>
-                <Button type="submit">Login</Button>
+                <SubmitButton>Login</SubmitButton>
               </Flex>
             </form>
           </Flex>
