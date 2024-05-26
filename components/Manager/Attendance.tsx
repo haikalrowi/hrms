@@ -85,7 +85,7 @@ function AttendanceRow(
   const attendanceStatus = getAttendanceStatus(attendance);
 
   return (
-    <Table.Row key={attendance.id}>
+    <Table.Row>
       <Table.Cell>
         <Text>{employee}</Text>
       </Table.Cell>

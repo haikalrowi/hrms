@@ -23,7 +23,7 @@ function TaskRow(task: Task) {
   const result = getTaskResultStatus(task);
 
   return (
-    <Table.Row key={task.id}>
+    <Table.Row>
       <Table.Cell>{task.title}</Table.Cell>
       <Table.Cell>
         <Badge>{result}</Badge>

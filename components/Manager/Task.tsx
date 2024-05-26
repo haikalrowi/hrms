@@ -74,7 +74,7 @@ function TaskRow(
   const result = getTaskResultStatus(task);
 
   return (
-    <Table.Row key={task.id}>
+    <Table.Row>
       <Table.Cell>{task.title}</Table.Cell>
       <Table.Cell>
         <Badge>{result}</Badge>
@@ -124,7 +124,9 @@ export function ManagerTask() {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {userContext.user?.Manager?.Task.map((task) => <TaskRow {...task} />)}
+          {userContext.user?.Manager?.Task.map((task) => (
+            <TaskRow key={task.id} {...task} />
+          ))}
         </Table.Body>
       </Table.Root>
     </Flex>
