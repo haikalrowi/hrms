@@ -2,7 +2,7 @@ import { UserContext } from "@/context/Dashboard";
 import { employeeUpdateAttendance } from "@/lib/action";
 import { getAttendanceStatus } from "@/lib/utils";
 import { Attendance } from "@prisma/client";
-import { Badge, Button, Container, Table } from "@radix-ui/themes";
+import { Badge, Button, Flex, Table } from "@radix-ui/themes";
 import { useContext, useState } from "react";
 
 function AttendanceRow(attendance: Attendance) {
@@ -19,6 +19,7 @@ function AttendanceRow(attendance: Attendance) {
     setCheckOutPending(true);
   };
   const attendanceStatus = getAttendanceStatus(attendance);
+
   return (
     <Table.Row>
       <Table.Cell>{attendance.checkInDate.toLocaleString()}</Table.Cell>
@@ -54,7 +55,7 @@ export function EmployeeAttendance() {
   const userContext = useContext(UserContext);
 
   return (
-    <Container>
+    <Flex direction={"column"}>
       <Table.Root>
         <Table.Header>
           <Table.Row>
@@ -70,6 +71,6 @@ export function EmployeeAttendance() {
           ))}
         </Table.Body>
       </Table.Root>
-    </Container>
+    </Flex>
   );
 }

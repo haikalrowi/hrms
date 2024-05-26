@@ -1,12 +1,12 @@
 import { UserContext } from "@/context/Dashboard";
-import { Container, Table } from "@radix-ui/themes";
+import { Flex, Table } from "@radix-ui/themes";
 import { useContext } from "react";
 
 export function ManagerEmployee() {
   const userContext = useContext(UserContext);
 
   return (
-    <Container>
+    <Flex direction={"column"}>
       <Table.Root>
         <Table.Header>
           <Table.Row>
@@ -23,6 +23,6 @@ export function ManagerEmployee() {
           ))}
         </Table.Body>
       </Table.Root>
-    </Container>
+    </Flex>
   );
 }

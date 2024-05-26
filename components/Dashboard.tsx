@@ -37,45 +37,51 @@ export function Dashboard(props: UserContextType) {
   return (
     <UserContext.Provider value={{ ...props }}>
       <Flex height={"100dvh"} gap={"6"} px={"5"} py={"4"}>
-        <Box width={"20%"}>
-          <Flex direction={"column"} gap={"3"} height={"100%"}>
-            {pages.map((page, index) => {
-              const changePage = () => {
-                setCurrentPageIndex(index);
-              };
-              return (
-                <Button
-                  key={index}
-                  size={"3"}
-                  variant="ghost"
-                  onClick={changePage}
-                  style={{
-                    backgroundColor:
-                      index === currentPageIndex
-                        ? "var(--accent-a4)"
-                        : undefined,
-                    justifyContent: "start",
-                  }}
-                >
-                  {page.title}
-                </Button>
-              );
-            })}
-            <Box flexGrow={"1"} />
-            <Text color="gray">{props.user?.email}</Text>
-            <Separator size={"4"} />
-            <Button
-              size={"3"}
-              variant="ghost"
-              loading={pending}
-              style={{ justifyContent: "start" }}
-              onClick={logout}
-            >
-              Logout
-            </Button>
-          </Flex>
+        <Flex
+          direction={"column"}
+          gap={"3"}
+          width={"20%"}
+          height={"100%"}
+          flexShrink={"0"}
+          flexGrow={"0"}
+        >
+          {pages.map((page, index) => {
+            const changePage = () => {
+              setCurrentPageIndex(index);
+            };
+            const backgroundColorStyle =
+              index === currentPageIndex ? "var(--accent-a4)" : undefined;
+            return (
+              <Button
+                key={index}
+                size={"3"}
+                variant="ghost"
+                onClick={changePage}
+                style={{
+                  backgroundColor: backgroundColorStyle,
+                  justifyContent: "start",
+                }}
+              >
+                {page.title}
+              </Button>
+            );
+          })}
+          <Box flexGrow={"1"} />
+          <Text color="gray">{props.user?.email}</Text>
+          <Separator size={"4"} />
+          <Button
+            size={"3"}
+            variant="ghost"
+            loading={pending}
+            style={{ justifyContent: "start" }}
+            onClick={logout}
+          >
+            Logout
+          </Button>
+        </Flex>
+        <Box flexShrink={"1"} flexGrow={"1"}>
+          {pages[currentPageIndex].content}
         </Box>
-        <Box width={"80%"}>{pages[currentPageIndex].content}</Box>
       </Flex>
     </UserContext.Provider>
   );

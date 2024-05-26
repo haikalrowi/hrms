@@ -1,10 +1,10 @@
 import { UserContext } from "@/context/Dashboard";
 import { managerCreateTask } from "@/lib/action";
 import { getTaskResultStatus, joinString } from "@/lib/utils";
+import { Prisma } from "@prisma/client";
 import {
   Badge,
   Button,
-  Container,
   Dialog,
   Flex,
   Select,
@@ -62,11 +62,57 @@ function Create() {
   );
 }
 
+function TaskRow(
+  task: Prisma.TaskGetPayload<{
+    include: { Employee: { include: { User: {} } } };
+  }>,
+) {
+  const employee = joinString(
+    task.Employee.User.name,
+    task.Employee.User.email,
+  );
+  const result = getTaskResultStatus(task);
+
+  return (
+    <Table.Row key={task.id}>
+      <Table.Cell>{task.title}</Table.Cell>
+      <Table.Cell>
+        <Badge>{result}</Badge>
+      </Table.Cell>
+      <Table.Cell>
+        <Text>{employee}</Text>
+      </Table.Cell>
+      <Table.Cell>
+        <Dialog.Root>
+          <Dialog.Trigger>
+            <Button size={"2"} variant="ghost">
+              Detail
+            </Button>
+          </Dialog.Trigger>
+          <Dialog.Content>
+            <Dialog.Title>{task.title}</Dialog.Title>
+            <Flex direction={"column"} gap={"2"}>
+              <Text>{task.description}</Text>
+              <TextArea
+                placeholder="Result"
+                defaultValue={
+                  task.result ?? "The employee has not created a result"
+                }
+                readOnly
+              />
+            </Flex>
+          </Dialog.Content>
+        </Dialog.Root>
+      </Table.Cell>
+    </Table.Row>
+  );
+}
+
 export function ManagerTask() {
   const userContext = useContext(UserContext);
 
   return (
-    <Container>
+    <Flex direction={"column"}>
       <Create />
       <Table.Root>
         <Table.Header>
@@ -78,49 +124,9 @@ export function ManagerTask() {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {userContext.user?.Manager?.Task.map((task) => {
-            const employee = joinString(
-              task.Employee.User.name,
-              task.Employee.User.email,
-            );
-            const result = getTaskResultStatus(task);
-            return (
-              <Table.Row key={task.id}>
-                <Table.Cell>{task.title}</Table.Cell>
-                <Table.Cell>
-                  <Badge>{result}</Badge>
-                </Table.Cell>
-                <Table.Cell>
-                  <Text>{employee}</Text>
-                </Table.Cell>
-                <Table.Cell>
-                  <Dialog.Root>
-                    <Dialog.Trigger>
-                      <Button size={"2"} variant="ghost">
-                        Detail
-                      </Button>
-                    </Dialog.Trigger>
-                    <Dialog.Content>
-                      <Dialog.Title>{task.title}</Dialog.Title>
-                      <Flex direction={"column"} gap={"2"}>
-                        <Text>{task.description}</Text>
-                        <TextArea
-                          placeholder="Result"
-                          defaultValue={
-                            task.result ??
-                            "The employee has not created a result"
-                          }
-                          readOnly
-                        />
-                      </Flex>
-                    </Dialog.Content>
-                  </Dialog.Root>
-                </Table.Cell>
-              </Table.Row>
-            );
-          })}
+          {userContext.user?.Manager?.Task.map((task) => <TaskRow {...task} />)}
         </Table.Body>
       </Table.Root>
-    </Container>
+    </Flex>
   );
 }
